@@ -16,6 +16,26 @@ final int DPIofYourDeviceScreen = 441; //you will need to look up the DPI or PPI
                                       //http://en.wikipedia.org/wiki/List_of_displays_by_pixel_density
 final float sizeOfInputArea = DPIofYourDeviceScreen*1; //aka, 1.0 inches square!
 
+final float next_button_global_x = 800;
+final float next_button_global_y = 0;
+final float next_button_width = 200;
+final float next_button_height = 200;
+
+final float letter_region_x = 0;
+final float letter_region_y = 0;
+final float letter_region_width = sizeOfInputArea;
+final float letter_region_height = sizeOfInputArea/2;
+
+final float left_adv_x = 0;
+final float left_adv_y = sizeOfInputArea/2;
+final float left_adv_width = sizeOfInputArea/2;
+final float left_adv_height = sizeOfInputArea/2;
+
+final float right_adv_x = sizeOfInputArea/2;
+final float right_adv_y = sizeOfInputArea/2;
+final float right_adv_width = sizeOfInputArea/2;
+final float right_adv_height = sizeOfInputArea/2;
+
 //Variables for my silly implementation. You can delete this:
 char currentLetter = 'a';
 
@@ -70,17 +90,20 @@ void draw()
     text("Target:   " + currentPhrase, 70, 100); //draw the target string
     text("Entered:  " + currentTyped, 70, 140); //draw what the user has entered thus far 
     fill(255, 0, 0);
-    rect(800, 00, 200, 200); //drag next button
+    rect(next_button_global_x, next_button_global_y, next_button_width, next_button_height); //drag next button
     fill(255);
     text("NEXT > ", 850, 100); //draw next label
 
     //my draw code
+    fill(0, 0, 255);
+    rect(200+letter_region_x, 200+letter_region_y, letter_region_width, letter_region_height); //draw left red button
+    fill(255);
     textAlign(CENTER);
-    text("" + currentLetter, 200+sizeOfInputArea/2, 200+sizeOfInputArea/3); //draw current letter
+    text("" + currentLetter, 200+letter_region_x + letter_region_width/2, 200+letter_region_y + letter_region_height/2); //draw current letter
     fill(255, 0, 0);
-    rect(200, 200+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2); //draw left red button
+    rect(200+left_adv_x, 200+left_adv_y, left_adv_width, left_adv_height); //draw left red button
     fill(0, 255, 0);
-    rect(200+sizeOfInputArea/2, 200+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2); //draw right green button
+    rect(200+right_adv_x, 200+right_adv_y, right_adv_width, right_adv_height); //draw right green button
   }
   
 }
@@ -94,21 +117,21 @@ boolean didMouseClick(float x, float y, float w, float h) //simple function to d
 void mousePressed()
 {
 
-  if (didMouseClick(200, 200+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2)) //check if click in left button
+  if (didMouseClick(200+left_adv_x, 200+left_adv_y, left_adv_width, left_adv_height)) //check if click in left button
   {
     currentLetter --;
     if (currentLetter<'_') //wrap around to z
       currentLetter = 'z';
   }
 
-  if (didMouseClick(200+sizeOfInputArea/2, 200+sizeOfInputArea/2, sizeOfInputArea/2, sizeOfInputArea/2)) //check if click in right button
+  if (didMouseClick(200+right_adv_x, 200+right_adv_y, right_adv_width, right_adv_height)) //check if click in right button
   {
     currentLetter ++;
     if (currentLetter>'z') //wrap back to space (aka underscore)
       currentLetter = '_';
   }
 
-  if (didMouseClick(200, 200, sizeOfInputArea, sizeOfInputArea/2)) //check if click occured in letter area
+  if (didMouseClick(200 + letter_region_x, 200 + letter_region_y, letter_region_width, letter_region_height)) //check if click occured in letter area
   {
     if (currentLetter=='_') //if underscore, consider that a space bar
       currentTyped+=" ";
@@ -119,7 +142,7 @@ void mousePressed()
   }
 
   //You are allowed to have a next button outside the 2" area
-  if (didMouseClick(800, 00, 200, 200)) //check if click is in next button
+  if (didMouseClick(next_button_global_x, next_button_global_y, next_button_width, next_button_height)) //check if click is in next button
   {
     nextTrial(); //if so, advance to next trial
   }
