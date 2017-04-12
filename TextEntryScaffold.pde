@@ -15,6 +15,7 @@ String currentTyped = ""; //what the user has typed so far
 final int DPIofYourDeviceScreen = 441; //you will need to look up the DPI or PPI of your device to make sure you get the right scale!!
                                       //http://en.wikipedia.org/wiki/List_of_displays_by_pixel_density
 final float sizeOfInputArea = DPIofYourDeviceScreen*1; //aka, 1.0 inches square!
+int first_select = 0;
 
 final float next_button_global_x = 800;
 final float next_button_global_y = 0;
@@ -35,6 +36,53 @@ final float right_adv_x = sizeOfInputArea/2;
 final float right_adv_y = sizeOfInputArea/2;
 final float right_adv_width = sizeOfInputArea/2;
 final float right_adv_height = sizeOfInputArea/2;
+final float[] right_adv_A = new float[]{200+right_adv_x, 200+right_adv_y, right_adv_width, right_adv_height};
+
+
+final float a_x = 0;
+final float a_y = 6*sizeOfInputArea/7;
+final float a_w = sizeOfInputArea;
+final float a_h = sizeOfInputArea/7;
+final float[] a_A = new float[]{200+a_x, 200+a_y, a_w, a_h};
+
+final float b_x = 0;
+final float b_y = 6*sizeOfInputArea/7;
+final float b_w = sizeOfInputArea/4;
+final float b_h = sizeOfInputArea/7;
+final float[] b_A = new float[]{200+b_x, 200+b_y, b_w, b_h};
+
+final float s_x = sizeOfInputArea/4;
+final float s_y = 6*sizeOfInputArea/7;
+final float s_w = 3*sizeOfInputArea/4;
+final float s_h = sizeOfInputArea/7;
+final float[] s_A = new float[]{200+s_x, 200+s_y, s_w, s_h};
+
+final float tl_x = 0;
+final float tl_y = 0;
+final float tl_w = sizeOfInputArea/2;
+final float tl_h = 3*sizeOfInputArea/7;
+final float[] tl_A = new float[]{200+tl_x, 200+tl_y, tl_w, tl_h};
+
+final float tr_x = sizeOfInputArea/2;
+final float tr_y = 0;
+final float tr_w = sizeOfInputArea/2;
+final float tr_h = 3*sizeOfInputArea/7;
+final float[] tr_A = new float[]{200+tr_x, 200+tr_y, tr_w, tr_h};
+
+final float bl_x = 0;
+final float bl_y = 3*sizeOfInputArea/7;
+final float bl_w = sizeOfInputArea/2;
+final float bl_h = 3*sizeOfInputArea/7;
+final float[] bl_A = new float[]{200+bl_x, 200+bl_y, bl_w, bl_h};
+
+final float br_x = sizeOfInputArea/2;
+final float br_y = 3*sizeOfInputArea/7;
+final float br_w = sizeOfInputArea/2;
+final float br_h = 3*sizeOfInputArea/7;
+final float[] br_A = new float[]{200+br_x, 200+br_y, br_w, br_h};
+
+
+
 
 //Variables for my silly implementation. You can delete this:
 char currentLetter = 'a';
@@ -95,57 +143,124 @@ void draw()
     text("NEXT > ", 850, 100); //draw next label
 
     //my draw code
-    //fill(0, 0, 255);
-    //rect(200+letter_region_x, 200+letter_region_y, letter_region_width, letter_region_height); //draw left red button
-    draw_nav_bar();
-    fill(255, 0, 0);
-    rect(200+left_adv_x, 200+left_adv_y, left_adv_width, left_adv_height); //draw left red button
-    fill(0, 255, 0);
-    rect(200+right_adv_x, 200+right_adv_y, right_adv_width, right_adv_height); //draw right green button
+    stroke(0);
+    draw_nav_buttons();
+    if (first_select == 0){
+      draw_top();
+      draw_bottom();
+    }else{
+      draw_six();
+    }
+   
+    noStroke();
+    
   }
   
 }
 
-
-void draw_nav_bar(){
-  fill(0, 0, 255);
-  rect(200+letter_region_x, 200+letter_region_y, letter_region_width, letter_region_height); //draw left red button
-  fill(255);
-  textAlign(CENTER);
-  text("" + currentLetter, 200+letter_region_x + letter_region_width/2, 200+letter_region_y + letter_region_height/2); //draw current letter
+void array_to_rect(float[] A){
+  rect(A[0], A[1], A[2], A[3]); //draw right green button
 }
+
+void draw_six(){
+  fill(125, 125, 125);
+  array_to_rect(tl_A);
+  fill(0, 125, 125);
+  array_to_rect(tr_A);
+  fill(125, 0, 125);
+  array_to_rect(bl_A);
+  fill(125, 125, 0);
+  array_to_rect(br_A);
+}
+
+void draw_nav_buttons(){
+  fill(255, 255, 0);
+  //array_to_rect(a_A);
+  array_to_rect(b_A);
+  array_to_rect(s_A);
+}
+
+void draw_top(){
+  fill(255, 0, 0);
+  array_to_rect(tl_A);
+  array_to_rect(tr_A);
+}
+
+void draw_bottom(){
+  fill(0, 255, 0);
+  array_to_rect(bl_A);
+  array_to_rect(br_A);
+}
+
+
 boolean didMouseClick(float x, float y, float w, float h) //simple function to do hit testing
 {
   return (mouseX > x && mouseX<x+w && mouseY>y && mouseY<y+h); //check to see if it is in button bounds
 }
 
+boolean didMouseClick2(float[] A) //simple function to do hit testing
+{
+  return didMouseClick(A[0], A[1], A[2], A[3]);
+}
+
 
 void mousePressed()
 {
-
-  if (didMouseClick(200+left_adv_x, 200+left_adv_y, left_adv_width, left_adv_height)) //check if click in left button
+  if (didMouseClick2(b_A)) //check if click in right button
   {
-    currentLetter --;
-    if (currentLetter<'_') //wrap around to z
-      currentLetter = 'z';
+    currentTyped+="back ";
+  }
+  
+  if (didMouseClick2(s_A)) //check if click in right button
+  {
+    currentTyped+="space ";
+  }
+  
+  if (didMouseClick2(tl_A)) //check if click in right button
+  {
+    currentTyped+="tl ";
+  }
+  
+  if (didMouseClick2(tr_A)) //check if click in right button
+  {
+    currentTyped+="tr ";
+  }
+  
+  if (didMouseClick2(bl_A)) //check if click in right button
+  {
+    currentTyped+="bl ";
+  }
+  
+  if (didMouseClick2(br_A)) //check if click in right button
+  {
+    currentTyped+="br ";
   }
 
-  if (didMouseClick(200+right_adv_x, 200+right_adv_y, right_adv_width, right_adv_height)) //check if click in right button
-  {
-    currentLetter ++;
-    if (currentLetter>'z') //wrap back to space (aka underscore)
-      currentLetter = '_';
-  }
+  //if (didMouseClick(200+left_adv_x, 200+left_adv_y, left_adv_width, left_adv_height)) //check if click in left button
+  //{
+  //  currentLetter --;
+  //  if (currentLetter<'_') //wrap around to z
+  //    currentLetter = 'z';
+  //}
 
-  if (didMouseClick(200 + letter_region_x, 200 + letter_region_y, letter_region_width, letter_region_height)) //check if click occured in letter area
-  {
-    if (currentLetter=='_') //if underscore, consider that a space bar
-      currentTyped+=" ";
-    else if (currentLetter=='`' & currentTyped.length()>0) //if `, treat that as a delete command
-      currentTyped = currentTyped.substring(0, currentTyped.length()-1);
-    else if (currentLetter!='`') //if not any of the above cases, add the current letter to the typed string
-      currentTyped+=currentLetter;
-  }
+  //if (didMouseClick2(right_adv_A)) //check if click in right button
+  //{
+  //  currentLetter ++;
+  //  currentLetter ++;
+  //  currentLetter ++;
+  //  if (currentLetter>'z') //wrap back to space (aka underscore)
+  //    currentLetter = '_';
+  //}
+
+  //if (didMouseClick(200 + letter_region_x, 200 + letter_region_y, letter_region_width, letter_region_height)) //check if click occured in letter area
+  //{
+  //  if (currentLetter=='_') //if underscore, consider that a space bar
+  //    currentTyped+=" ";
+  //  else if (currentLetter=='`' & currentTyped.length()>0) //if `, treat that as a delete command
+  //    currentTyped = currentTyped.substring(0, currentTyped.length()-1);
+  //  else if (currentLetter!='`') //if not any of the above cases, add the current letter to the typed string
+  //    currentTyped+=currentLetter;
+  //}
 
   //You are allowed to have a next button outside the 2" area
   if (didMouseClick(next_button_global_x, next_button_global_y, next_button_width, next_button_height)) //check if click is in next button
