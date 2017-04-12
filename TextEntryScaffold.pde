@@ -46,7 +46,7 @@ void setup()
   Collections.shuffle(Arrays.asList(phrases)); //randomize the order of the phrases
     
   orientation(PORTRAIT); //can also be LANDSCAPE -- sets orientation on android device
-  size(1000, 1000); //Sets the size of the app. You may want to modify this to your device. Many phones today are 1080 wide by 1920 tall.
+  size(1000, 1000, OPENGL); //Sets the size of the app. You may want to modify this to your device. Many phones today are 1080 wide by 1920 tall.
   textFont(createFont("Arial", 24)); //set the font to arial 24
   noStroke(); //my code doesn't use any strokes.
 }
@@ -95,11 +95,9 @@ void draw()
     text("NEXT > ", 850, 100); //draw next label
 
     //my draw code
-    fill(0, 0, 255);
-    rect(200+letter_region_x, 200+letter_region_y, letter_region_width, letter_region_height); //draw left red button
-    fill(255);
-    textAlign(CENTER);
-    text("" + currentLetter, 200+letter_region_x + letter_region_width/2, 200+letter_region_y + letter_region_height/2); //draw current letter
+    //fill(0, 0, 255);
+    //rect(200+letter_region_x, 200+letter_region_y, letter_region_width, letter_region_height); //draw left red button
+    draw_nav_bar();
     fill(255, 0, 0);
     rect(200+left_adv_x, 200+left_adv_y, left_adv_width, left_adv_height); //draw left red button
     fill(0, 255, 0);
@@ -108,6 +106,14 @@ void draw()
   
 }
 
+
+void draw_nav_bar(){
+  fill(0, 0, 255);
+  rect(200+letter_region_x, 200+letter_region_y, letter_region_width, letter_region_height); //draw left red button
+  fill(255);
+  textAlign(CENTER);
+  text("" + currentLetter, 200+letter_region_x + letter_region_width/2, 200+letter_region_y + letter_region_height/2); //draw current letter
+}
 boolean didMouseClick(float x, float y, float w, float h) //simple function to do hit testing
 {
   return (mouseX > x && mouseX<x+w && mouseY>y && mouseY<y+h); //check to see if it is in button bounds
