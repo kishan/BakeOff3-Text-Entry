@@ -16,6 +16,7 @@ final int DPIofYourDeviceScreen = 441; //you will need to look up the DPI or PPI
                                       //http://en.wikipedia.org/wiki/List_of_displays_by_pixel_density
 final float sizeOfInputArea = DPIofYourDeviceScreen*1; //aka, 1.0 inches square!
 int first_select = 0;
+boolean reset_to_main = false;
 
 final float next_button_global_x = 800;
 final float next_button_global_y = 0;
@@ -38,24 +39,33 @@ final float right_adv_width = sizeOfInputArea/2;
 final float right_adv_height = sizeOfInputArea/2;
 final float[] right_adv_A = new float[]{200+right_adv_x, 200+right_adv_y, right_adv_width, right_adv_height};
 
-
+// bottom bar
 final float a_x = 0;
 final float a_y = 6*sizeOfInputArea/7;
 final float a_w = sizeOfInputArea;
 final float a_h = sizeOfInputArea/7;
 final float[] a_A = new float[]{200+a_x, 200+a_y, a_w, a_h};
 
+// backspace
 final float b_x = 0;
 final float b_y = 6*sizeOfInputArea/7;
 final float b_w = sizeOfInputArea/4;
 final float b_h = sizeOfInputArea/7;
 final float[] b_A = new float[]{200+b_x, 200+b_y, b_w, b_h};
 
+// spacebar
 final float s_x = sizeOfInputArea/4;
 final float s_y = 6*sizeOfInputArea/7;
-final float s_w = 3*sizeOfInputArea/4;
+final float s_w = sizeOfInputArea/2;
 final float s_h = sizeOfInputArea/7;
 final float[] s_A = new float[]{200+s_x, 200+s_y, s_w, s_h};
+
+// main button
+final float m_x = 3*sizeOfInputArea/4;
+final float m_y = 6*sizeOfInputArea/7;
+final float m_w = sizeOfInputArea/4;
+final float m_h = sizeOfInputArea/7;
+final float[] m_A = new float[]{200+m_x, 200+m_y, m_w, m_h};
 
 final float tl_x = 0;
 final float tl_y = 0;
@@ -81,8 +91,79 @@ final float br_w = sizeOfInputArea/2;
 final float br_h = 3*sizeOfInputArea/7;
 final float[] br_A = new float[]{200+br_x, 200+br_y, br_w, br_h};
 
+final float[] grid_6_x_A = new float[]{0, sizeOfInputArea/3, 2*sizeOfInputArea/3};
+final float[] grid_6_y_A = new float[]{0, 3*sizeOfInputArea/7};
+final float grid_6_w = sizeOfInputArea/3;
+final float grid_6_h = 3*sizeOfInputArea/7;
+final String[] input_ABCDEF = new String[]{"A", "B", "C", "D", "E", "F"};
+final String[] input_GHIJKL = new String[]{"G", "H", "I", "J", "K", "L"};
+final String[] input_MNOPQR = new String[]{"M", "N", "O", "P", "Q", "R"};
+final String[] input_STUVWXYZ = new String[]{"S", "T", "U", "V", "W", "XYZ"};
+final String[] input_XYZ = new String[]{"X", "Y", "Z", ""};
+// lower case strings
+final String[] input_ABCDEF_lower = new String[]{"a", "b", "c", "d", "e", "f"};
+final String[] input_GHIJKL_lower = new String[]{"g", "h", "i", "j", "k", "l"};
+final String[] input_MNOPQR_lower = new String[]{"m", "n", "o", "p", "q", "r"};
+final String[] input_STUVWXYZ_lower = new String[]{"s", "t", "u", "v", "w", "xyz"};
+final String[] input_XYZ_lower = new String[]{"x", "y", "z", ""};
 
+final float[] grid_4_x_A = new float[]{0, sizeOfInputArea/2};
+final float[] grid_4_y_A = new float[]{0, 3*sizeOfInputArea/7};
+final float grid_4_w = sizeOfInputArea/2;
+final float grid_4_h = 3*sizeOfInputArea/7;
+final String[] input_initial = new String[]{"ABCDEF", "GHIJKL", "MNOPQR", "STUVWXYZ"};
 
+//draw grid of equal rectanlges
+void draw_grid(float[] start_x_A, float[] start_y_A, float w, float h, String[] text_A){
+  int text_i = 0;
+  for (float y : start_y_A){
+    for (float x : start_x_A){
+      fill(0, 0, 255);
+      float[] new_A = new float[]{200+x, 200+y, w, h};
+      array_to_rect(new_A);
+      fill(255);
+      textAlign(CENTER);
+      textSize(120); 
+      if (text_A[text_i].length() > 1){
+        textSize(50); 
+      }
+      text(text_A[text_i], 200 + x + w/2, 200 + y + h/2 + 20);
+      textSize(26); 
+      text_i += 1;
+    }
+  }
+}
+
+//draw grid of 6 rectanlges
+void draw_grid_6(String[] text_A){
+  draw_grid(grid_6_x_A, grid_6_y_A, grid_6_w, grid_6_h, text_A);
+}
+
+void draw_grid_4(String[] text_A){
+  draw_grid(grid_4_x_A, grid_4_y_A, grid_4_w, grid_4_h, text_A);
+}
+
+//draw grid of equal rectanlges
+int mouse_click_grid(float[] start_x_A, float[] start_y_A, float w, float h){
+  int text_i = 0;
+  for (float y : start_y_A){
+    for (float x : start_x_A){
+      if(didMouseClick(200 + x, 200 + y, w, h)){
+        return text_i;
+      }
+      text_i += 1;
+    }
+  }
+  return -1;
+}
+
+int mouse_click_grid_6(){
+  return mouse_click_grid(grid_6_x_A, grid_6_y_A, grid_6_w, grid_6_h);
+}
+
+int mouse_click_grid_4(){
+  return mouse_click_grid(grid_4_x_A, grid_4_y_A, grid_4_w, grid_4_h);
+}
 
 //Variables for my silly implementation. You can delete this:
 char currentLetter = 'a';
@@ -123,11 +204,6 @@ void draw()
     text("Click to start time!", 280, 150); //display this messsage until the user clicks!
   }
 
-  if (startTime==0 & mousePressed)
-  {
-    nextTrial(); //start the trials!
-  }
-
   if (startTime!=0)
   {
     //you will need something like the next 10 lines in your code. Output does not have to be within the 2 inch area!
@@ -136,11 +212,13 @@ void draw()
     text("Phrase " + (currTrialNum+1) + " of " + totalTrialNum, 70, 50); //draw the trial count
     fill(255);
     text("Target:   " + currentPhrase, 70, 100); //draw the target string
-    text("Entered:  " + currentTyped, 70, 140); //draw what the user has entered thus far 
+    String currentTyped_underscore = currentTyped.replaceAll(" ", "_");
+    text("Entered:  " + currentTyped_underscore, 70, 140); //draw what the user has entered thus far 
     fill(255, 0, 0);
     rect(next_button_global_x, next_button_global_y, next_button_width, next_button_height); //drag next button
     fill(255);
     text("NEXT > ", 850, 100); //draw next label
+    //text("first_select:   " + first_select, 270, 200); //draw the target string  
 
     //my draw code
     stroke(0);
@@ -148,12 +226,20 @@ void draw()
     if (first_select == 0){
       draw_top();
       draw_bottom();
-    }else{
-      draw_six();
+    }else if (first_select == 1){
+      draw_grid_6(input_ABCDEF);
+    }else if (first_select == 2){
+      draw_grid_6(input_GHIJKL);
+    }else if (first_select == 3){
+      draw_grid_6(input_MNOPQR);
+    }else if (first_select == 4){
+      draw_grid_6(input_STUVWXYZ);
+    }else if (first_select == 99){
+      // special case for XYZ
+      draw_grid_4(input_XYZ);
     }
    
-    noStroke();
-    
+    noStroke();    
   }
   
 }
@@ -174,24 +260,43 @@ void draw_six(){
 }
 
 void draw_nav_buttons(){
-  fill(255, 255, 0);
+  fill(0, 0, 255);
   //array_to_rect(a_A);
   array_to_rect(b_A);
   array_to_rect(s_A);
+  array_to_rect(m_A);
+  fill(255);
+  textAlign(CENTER);
+  textSize(25); 
+  text("<", 200 + b_x + b_w/2, 200 + b_y + b_h/2);
+  text("space", 200 + s_x + s_w/2, 200 + s_y + s_h/2);
+  text("M", 200 + m_x + m_w/2, 200 + m_y + m_h/2);
+  textSize(26); 
 }
 
 void draw_top(){
   fill(255, 0, 0);
   array_to_rect(tl_A);
   array_to_rect(tr_A);
+  fill(255);
+  textAlign(CENTER);
+  textSize(50); 
+  text("ABCDEF", 200 + tl_x + tl_w/2, 200 + tl_y + tl_h/2);
+  text("GHIJKL", 200 + tr_x + tr_w/2, 200 + tr_y + tr_h/2);
+  textSize(26); 
 }
 
 void draw_bottom(){
-  fill(0, 255, 0);
+  fill(255, 0, 0);
   array_to_rect(bl_A);
   array_to_rect(br_A);
+  fill(255);
+  textAlign(CENTER);
+  textSize(45); 
+  text("MNOPQR", 200 + bl_x + bl_w/2, 200 + bl_y + bl_h/2);
+  text("STUV-Z", 200 + br_x + br_w/2, 200 + br_y + br_h/2);
+  textSize(26); 
 }
-
 
 boolean didMouseClick(float x, float y, float w, float h) //simple function to do hit testing
 {
@@ -206,66 +311,114 @@ boolean didMouseClick2(float[] A) //simple function to do hit testing
 
 void mousePressed()
 {
-  if (didMouseClick2(b_A)) //check if click in right button
+  if (startTime==0 & mousePressed)
   {
-    currentTyped+="back ";
+    nextTrial(); //start the trials!
+    first_select = 0;
+    return;
   }
   
-  if (didMouseClick2(s_A)) //check if click in right button
+  // backspace button
+  if (didMouseClick2(b_A))
   {
-    currentTyped+="space ";
+    if (currentTyped.length()>0){
+      currentTyped = currentTyped.substring(0, currentTyped.length()-1);
+    }
   }
   
-  if (didMouseClick2(tl_A)) //check if click in right button
+  // spacebar button
+  if (didMouseClick2(s_A))
   {
-    currentTyped+="tl ";
+    currentTyped+=" ";
   }
   
-  if (didMouseClick2(tr_A)) //check if click in right button
+  // main button
+  if (didMouseClick2(m_A)) 
   {
-    currentTyped+="tr ";
+   reset_to_main = true;
   }
   
-  if (didMouseClick2(bl_A)) //check if click in right button
-  {
-    currentTyped+="bl ";
+  if (first_select == 1){
+    int grid_region_clicked = mouse_click_grid_6();
+    if (grid_region_clicked != -1){
+      currentTyped+= input_ABCDEF_lower[grid_region_clicked];
+      reset_to_main = true;
+    }
   }
   
-  if (didMouseClick2(br_A)) //check if click in right button
-  {
-    currentTyped+="br ";
+  if (first_select == 2){
+    int grid_region_clicked = mouse_click_grid_6();
+    if (grid_region_clicked != -1){
+      currentTyped+= input_GHIJKL_lower[grid_region_clicked];
+      reset_to_main = true;
+    }
   }
+  
+  if (first_select == 3){
+    int grid_region_clicked = mouse_click_grid_6();
+    if (grid_region_clicked != -1){
+      currentTyped+= input_MNOPQR_lower[grid_region_clicked];
+      reset_to_main = true;
+    }
+  }
+  
+  // special case for XYZ
+  if (first_select == 99){
+    int grid_region_clicked = mouse_click_grid_4();
+    if (grid_region_clicked != -1){
+      currentTyped+= input_XYZ_lower[grid_region_clicked];
+      reset_to_main = true;
+    }
+  }
+  
+  if (first_select == 4){
+    int grid_region_clicked = mouse_click_grid_6();
+    if (grid_region_clicked == 5){
+      first_select = 99;
+    }
+    else if (grid_region_clicked != -1){
+      currentTyped+= input_STUVWXYZ_lower[grid_region_clicked];
+      reset_to_main = true;
+    } 
+  }
+  
+  
+  if (first_select == 0){
+    // ABCDEF
+    if (didMouseClick2(tl_A))
+    {
+      first_select = 1;
+    }
+    // GHIJKL
+    if (didMouseClick2(tr_A)) 
+    {
+      first_select = 2;
+    }
+    // MNOPQR
+    if (didMouseClick2(bl_A))
+    {
+      first_select = 3;
+    }
+    // STUVWXYZ
+    if (didMouseClick2(br_A)) 
+    {
+      first_select = 4;
+    }
+  }
+ 
 
-  //if (didMouseClick(200+left_adv_x, 200+left_adv_y, left_adv_width, left_adv_height)) //check if click in left button
-  //{
-  //  currentLetter --;
-  //  if (currentLetter<'_') //wrap around to z
-  //    currentLetter = 'z';
-  //}
-
-  //if (didMouseClick2(right_adv_A)) //check if click in right button
-  //{
-  //  currentLetter ++;
-  //  currentLetter ++;
-  //  currentLetter ++;
-  //  if (currentLetter>'z') //wrap back to space (aka underscore)
-  //    currentLetter = '_';
-  //}
-
-  //if (didMouseClick(200 + letter_region_x, 200 + letter_region_y, letter_region_width, letter_region_height)) //check if click occured in letter area
-  //{
-  //  if (currentLetter=='_') //if underscore, consider that a space bar
-  //    currentTyped+=" ";
-  //  else if (currentLetter=='`' & currentTyped.length()>0) //if `, treat that as a delete command
-  //    currentTyped = currentTyped.substring(0, currentTyped.length()-1);
-  //  else if (currentLetter!='`') //if not any of the above cases, add the current letter to the typed string
-  //    currentTyped+=currentLetter;
-  //}
 
   //You are allowed to have a next button outside the 2" area
   if (didMouseClick(next_button_global_x, next_button_global_y, next_button_width, next_button_height)) //check if click is in next button
   {
     nextTrial(); //if so, advance to next trial
+    reset_to_main = true;
+  }
+  
+  // return back to main menu
+  if (reset_to_main){
+    first_select = 0;
+    reset_to_main = false;
   }
 }
 
