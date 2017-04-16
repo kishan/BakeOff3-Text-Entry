@@ -16,6 +16,8 @@ final int DPIofYourDeviceScreen = 441; //you will need to look up the DPI or PPI
                                       //http://en.wikipedia.org/wiki/List_of_displays_by_pixel_density
 final float sizeOfInputArea = DPIofYourDeviceScreen*1; //aka, 1.0 inches square!
 int first_select = 0;
+int blink = 0;
+int blink_grid = 0;
 boolean reset_to_main = false;
 
 final float next_button_global_x = 800;
@@ -119,6 +121,9 @@ void draw_grid(float[] start_x_A, float[] start_y_A, float w, float h, String[] 
   for (float y : start_y_A){
     for (float x : start_x_A){
       fill(0, 0, 255);
+      if (blink_grid != -1 && blink_grid == text_i){
+        fill(0, 255, 0);
+      }
       float[] new_A = new float[]{200+x, 200+y, w, h};
       array_to_rect(new_A);
       fill(255);
@@ -194,6 +199,13 @@ void draw()
     fill(255);
     textAlign(CENTER);
     text("Finished", 280, 150);
+    float wpm = (lettersEnteredTotal/5.0f)/((finishTime - startTime)/60000f); //FYI - 60K is number of milliseconds in minute
+    text("Raw WPM: " + wpm, 280, 190);
+    float freebieErrors = lettersExpectedTotal*.05; //no penalty if errors are under 5% of chars
+    text("Freebie errors: " + freebieErrors, 280, 240);
+    float penalty = max(errorsTotal-freebieErrors,0) * .5f;
+    text("Penalty: " + penalty, 280, 280);
+    text("WPM w/ penalty: " + (wpm-penalty), 280, 320);
     return;
   }
 
@@ -237,6 +249,24 @@ void draw()
     }else if (first_select == 99){
       // special case for XYZ
       draw_grid_4(input_XYZ);
+    }
+    if (blink != 0){
+      fill(0, 255, 0);
+      if (blink == 1){
+        array_to_rect(tl_A);
+      }else if (blink == 2){
+        array_to_rect(tr_A);
+      }else if (blink == 3){
+        array_to_rect(bl_A);
+      }else if (blink == 4){
+        array_to_rect(br_A);
+      }
+      blink = 0;
+    }
+    
+    if (blink_grid != -1){
+      draw_grid_6(input_ABCDEF);
+      blink_grid = -1;
     }
    
     noStroke();    
@@ -343,6 +373,7 @@ void mousePressed()
     if (grid_region_clicked != -1){
       currentTyped+= input_ABCDEF_lower[grid_region_clicked];
       reset_to_main = true;
+      blink_grid = grid_region_clicked;
     }
   }
   
@@ -351,6 +382,7 @@ void mousePressed()
     if (grid_region_clicked != -1){
       currentTyped+= input_GHIJKL_lower[grid_region_clicked];
       reset_to_main = true;
+      blink_grid = grid_region_clicked;
     }
   }
   
@@ -359,6 +391,7 @@ void mousePressed()
     if (grid_region_clicked != -1){
       currentTyped+= input_MNOPQR_lower[grid_region_clicked];
       reset_to_main = true;
+      blink_grid = grid_region_clicked;
     }
   }
   
@@ -368,6 +401,7 @@ void mousePressed()
     if (grid_region_clicked != -1){
       currentTyped+= input_XYZ_lower[grid_region_clicked];
       reset_to_main = true;
+      blink_grid = grid_region_clicked;
     }
   }
   
@@ -375,10 +409,12 @@ void mousePressed()
     int grid_region_clicked = mouse_click_grid_6();
     if (grid_region_clicked == 5){
       first_select = 99;
+      blink_grid = grid_region_clicked;
     }
     else if (grid_region_clicked != -1){
       currentTyped+= input_STUVWXYZ_lower[grid_region_clicked];
       reset_to_main = true;
+      blink_grid = grid_region_clicked;
     } 
   }
   
@@ -388,21 +424,25 @@ void mousePressed()
     if (didMouseClick2(tl_A))
     {
       first_select = 1;
+      blink = 1;
     }
     // GHIJKL
     if (didMouseClick2(tr_A)) 
     {
       first_select = 2;
+      blink = 2;
     }
     // MNOPQR
     if (didMouseClick2(bl_A))
     {
       first_select = 3;
+      blink = 3;
     }
     // STUVWXYZ
     if (didMouseClick2(br_A)) 
     {
       first_select = 4;
+      blink = 4;
     }
   }
  
