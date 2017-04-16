@@ -20,7 +20,9 @@ int blink = 0;
 int blink_grid = 0;
 float dragged_dist = 0;
 float mouseXdown = -1;
+float mouseYdown = -1;
 boolean reset_to_main = false;
+boolean game_started = false;
 
 final float next_button_global_x = 800;
 final float next_button_global_y = 0;
@@ -342,6 +344,9 @@ boolean didMouseClick2(float[] A) //simple function to do hit testing
 }
 
 void mouseReleased(){
+  if (!game_started){
+    return;
+  }
   if (mouseXdown >= 0){
     // swipe left
     if ((mouseX - mouseXdown) < -200){
@@ -349,25 +354,24 @@ void mouseReleased(){
       if (currentTyped.length()>0){
         currentTyped = currentTyped.substring(0, currentTyped.length()-1);
       }  
+      return;
     }
     // swipe right
     if ((mouseX - mouseXdown) > 200){
       dragged_dist = abs(mouseX - mouseXdown);
-      currentTyped+=" ";  
+      currentTyped+=" ";
+      return;
+    }
+    // swipe up or down
+    if (abs(mouseX - mouseXdown) < 100 && abs(mouseY - mouseYdown) > 200){
+      dragged_dist = abs(mouseX - mouseXdown);
+      //currentTyped+=" &&& ";
+      first_select = 0;
+      return;
     }
   }
-}
-
-void mousePressed()
-{
-  mouseXdown = mouseX;
-  if (startTime==0 & mousePressed)
-  {
-    nextTrial(); //start the trials!
-    first_select = 0;
-    return;
-  }
   
+    
   // backspace button
   if (didMouseClick2(b_A))
   {
@@ -480,6 +484,20 @@ void mousePressed()
     first_select = 0;
     reset_to_main = false;
   }
+}
+
+void mousePressed()
+{
+  mouseXdown = mouseX;
+  mouseYdown = mouseY;
+  if (startTime==0 & mousePressed)
+  {
+    nextTrial(); //start the trials!
+    first_select = 0;
+    game_started = true;
+    return;
+  }
+
 }
 
 
