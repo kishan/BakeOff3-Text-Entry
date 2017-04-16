@@ -18,6 +18,8 @@ final float sizeOfInputArea = DPIofYourDeviceScreen*1; //aka, 1.0 inches square!
 int first_select = 0;
 int blink = 0;
 int blink_grid = 0;
+float dragged_dist = 0;
+float mouseXdown = -1;
 boolean reset_to_main = false;
 
 final float next_button_global_x = 800;
@@ -226,6 +228,7 @@ void draw()
     text("Target:   " + currentPhrase, 70, 100); //draw the target string
     String currentTyped_underscore = currentTyped.replaceAll(" ", "_");
     text("Entered:  " + currentTyped_underscore, 70, 140); //draw what the user has entered thus far 
+    text("Distance Dragged:  " + dragged_dist, 70, 190); //draw what the user has entered thus far 
     fill(255, 0, 0);
     rect(next_button_global_x, next_button_global_y, next_button_width, next_button_height); //drag next button
     fill(255);
@@ -298,9 +301,9 @@ void draw_nav_buttons(){
   fill(255);
   textAlign(CENTER);
   textSize(25); 
-  text("<", 200 + b_x + b_w/2, 200 + b_y + b_h/2);
+  text("⇐", 200 + b_x + b_w/2, 200 + b_y + b_h/2);
   text("space", 200 + s_x + s_w/2, 200 + s_y + s_h/2);
-  text("M", 200 + m_x + m_w/2, 200 + m_y + m_h/2);
+  text("Menu", 200 + m_x + m_w/2, 200 + m_y + m_h/2);
   textSize(26); 
 }
 
@@ -338,9 +341,26 @@ boolean didMouseClick2(float[] A) //simple function to do hit testing
   return didMouseClick(A[0], A[1], A[2], A[3]);
 }
 
+void mouseReleased(){
+  if (mouseXdown >= 0){
+    // swipe left
+    if ((mouseX - mouseXdown) < -200){
+      dragged_dist = abs(mouseX - mouseXdown);
+      if (currentTyped.length()>0){
+        currentTyped = currentTyped.substring(0, currentTyped.length()-1);
+      }  
+    }
+    // swipe right
+    if ((mouseX - mouseXdown) > 200){
+      dragged_dist = abs(mouseX - mouseXdown);
+      currentTyped+=" ";  
+    }
+  }
+}
 
 void mousePressed()
 {
+  mouseXdown = mouseX;
   if (startTime==0 & mousePressed)
   {
     nextTrial(); //start the trials!
