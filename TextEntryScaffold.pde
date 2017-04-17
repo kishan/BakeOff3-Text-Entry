@@ -101,6 +101,14 @@ final float[] grid_6_x_A = new float[]{0, sizeOfInputArea/3, 2*sizeOfInputArea/3
 final float[] grid_6_y_A = new float[]{0, 3*sizeOfInputArea/7};
 final float grid_6_w = sizeOfInputArea/3;
 final float grid_6_h = 3*sizeOfInputArea/7;
+
+final float[] grid_vowel_x_A = new float[]{0, sizeOfInputArea/5, 2*sizeOfInputArea/5, 3*sizeOfInputArea/5, 4*sizeOfInputArea/5};
+final float[] grid_vowel_y_A = new float[]{6*sizeOfInputArea/7};
+final float grid_vowel_w = sizeOfInputArea/5;
+final float grid_vowel_h = sizeOfInputArea/7;
+final String[] input_vowels = new String[]{"A", "E", "I", "O", "U"};
+
+
 final String[] input_ABCDEF = new String[]{"A", "B", "C", "D", "E", "F"};
 final String[] input_GHIJKL = new String[]{"G", "H", "I", "J", "K", "L"};
 final String[] input_MNOPQR = new String[]{"M", "N", "O", "P", "Q", "R"};
@@ -112,6 +120,8 @@ final String[] input_GHIJKL_lower = new String[]{"g", "h", "i", "j", "k", "l"};
 final String[] input_MNOPQR_lower = new String[]{"m", "n", "o", "p", "q", "r"};
 final String[] input_STUVWXYZ_lower = new String[]{"s", "t", "u", "v", "w", "xyz"};
 final String[] input_XYZ_lower = new String[]{"x", "y", "z", ""};
+final String[] input_vowels_lower = new String[]{"a", "e", "i", "o", "u"};
+
 
 final float[] grid_4_x_A = new float[]{0, sizeOfInputArea/2};
 final float[] grid_4_y_A = new float[]{0, 3*sizeOfInputArea/7};
@@ -133,8 +143,13 @@ void draw_grid(float[] start_x_A, float[] start_y_A, float w, float h, String[] 
       fill(255);
       textAlign(CENTER);
       textSize(120); 
+      // different font size for inital main screen
       if (text_A[text_i].length() > 1){
         textSize(50); 
+      }
+      // different font size for vowels
+      if (text_A.length == 5){
+        textSize(40); 
       }
       text(text_A[text_i], 200 + x + w/2, 200 + y + h/2 + 20);
       textSize(26); 
@@ -146,6 +161,10 @@ void draw_grid(float[] start_x_A, float[] start_y_A, float w, float h, String[] 
 //draw grid of 6 rectanlges
 void draw_grid_6(String[] text_A){
   draw_grid(grid_6_x_A, grid_6_y_A, grid_6_w, grid_6_h, text_A);
+}
+
+void draw_grid_vowels(){
+  draw_grid(grid_vowel_x_A, grid_vowel_y_A, grid_vowel_w, grid_vowel_h, input_vowels);
 }
 
 void draw_grid_4(String[] text_A){
@@ -172,6 +191,10 @@ int mouse_click_grid_6(){
 
 int mouse_click_grid_4(){
   return mouse_click_grid(grid_4_x_A, grid_4_y_A, grid_4_w, grid_4_h);
+}
+
+int mouse_click_grid_vowels(){
+  return mouse_click_grid(grid_vowel_x_A, grid_vowel_y_A, grid_vowel_w, grid_vowel_h);
 }
 
 //Variables for my silly implementation. You can delete this:
@@ -239,7 +262,8 @@ void draw()
 
     //my draw code
     stroke(0);
-    draw_nav_buttons();
+    //draw_nav_buttons();
+    draw_grid_vowels();
     if (first_select == 0){
       draw_top();
       draw_bottom();
@@ -371,25 +395,13 @@ void mouseReleased(){
     }
   }
   
-    
-  // backspace button
-  if (didMouseClick2(b_A))
-  {
-    if (currentTyped.length()>0){
-      currentTyped = currentTyped.substring(0, currentTyped.length()-1);
-    }
-  }
-  
-  // spacebar button
-  if (didMouseClick2(s_A))
-  {
-    currentTyped+=" ";
-  }
-  
-  // main button
-  if (didMouseClick2(m_A)) 
-  {
-   reset_to_main = true;
+  // click vowel region
+  int grid_region_clicked_vowels = mouse_click_grid_vowels();
+  if (grid_region_clicked_vowels != -1){
+    currentTyped+= input_vowels_lower[grid_region_clicked_vowels];
+    reset_to_main = true;
+    blink_grid = grid_region_clicked_vowels;
+    first_select = 0;
   }
   
   if (first_select == 1){
